@@ -19,6 +19,8 @@ passport.use(new localStrategy(userModel.authenticate()));
 //server pe data store in session and browser.clent pe in form of cookies
 //res.send sends the response from server on the route you are sending it
 
+// user.posts.forEach(function(post) =>  here, user.posts is an array and uspe forEach lagaya hai 
+
 router.get("/", function (req, res) {
   res.render("index", { footer: false });   //rendering index.ejs on home page
 });        //rendering sirf views folder ke andar ka content (*.ejs ka hi krte hai )
@@ -96,7 +98,7 @@ router.get("/search", isLoggedIn, async function (req, res) {
   res.render("search", { footer: true, user });
 });
 
-router.get("/user/:username", isLoggedIn, async function (req, res) {
+router.get("/user/:username", isLoggedIn, async function (req, res) {    //dynamic route from server
   var val = req.params.username;
   const users = await userModel.find({username: new RegExp('^'+val, 'i')});
   res.json(users);
@@ -132,14 +134,14 @@ router.get("/upload", isLoggedIn, async function (req, res) {
   res.render("upload", { footer: true, user });   //rendering upload.ejs
 });
 
-router.get("/like/:postid", isLoggedIn, async function (req, res) {
+router.get("/like/:postid", isLoggedIn, async function (req, res) {   //like/unlike kr rhe post ko
   const user = await userModel.findOne({username: req.session.passport.user});
   const post = await postModel.findOne({_id: req.params.postid})
-  if(post.likes.indexOf(user._id) === -1){
-    post.likes.push(user._id);
+  if(post.likes.indexOf(user._id) === -1){  //post ke likes array me user ke id ni hai = was never liked
+    post.likes.push(user._id);       
   }
-  else{
-    post.likes.splice(post.likes.indexOf(user._id), 1);
+  else{         //already liked post  = unlike it
+    post.likes.splice(post.likes.indexOf(user._id), 1);   //
   }
   await post.save();
   res.json(post);

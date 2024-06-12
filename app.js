@@ -3,8 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const expressSession = require('express-session');  //creates a memory store instance to store session data of the user on the server
-const passport = require('passport');
+const expressSession = require('express-session');  //express-session creates a memory store instance to store session data of the user on the server
+const passport = require('passport'); //passport -> Passport is middleware for Node.js that makes it easy to implement authentication and authorization and protected routes
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -15,17 +15,19 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(expressSession({
-  resave: false,
+app.use(expressSession({       
+  resave: false,        //agar session me change na hua hoo toh don't save -> saves load and resources
   saveUninitialized: false,
-  secret: "hey hey"
+  secret: "hey hey"             //allows to save the data
 }));
-app.use(passport.initialize());
+          //documentation of passport
+app.use(passport.initialize());  //paassport is initialized  
 app.use(passport.session());
 passport.serializeUser(usersRouter.serializeUser());
 passport.deserializeUser(usersRouter.deserializeUser());
 
-app.use(logger('dev'));
+//middleware: 
+app.use(logger('dev'));       
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
